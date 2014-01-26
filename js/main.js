@@ -30,10 +30,6 @@ require(["graphOptionUI", "seriesUI", "url", "imageUI"], function( GraphOptionUI
 
     GraphOptionUI.init();
 
-//sortByMaxima(summarize(groupByNode(stats.counters.*.auth.transaction.commit.*.count,6,"sum"),"1min"))&target=thomas(stats.counters.sc-www1.web.api.command.ApproveReport.count)
-//&target=thomas(stats.counters.sc-www1.web.api.command.ApproveReport.count)";
-var stt = "https://stats.expensify.com/render/?width=586&height=308&from=-1hours&areaMode=stacked&lineMode=staircase&target=sortByMaxima(summarize(groupByNode(stats.counters.*.auth.transaction.commit.*.count%2C6%2C%22sum%22)%2C%221min%22))";
-           https://stats.expensify.com/render/?width=586&height=308&from=-1hours&areaMode=stacked&lineMode=staircase&target=sortByMaxima(summarize(groupByNode(stats.counters.*.auth.transaction.commit.*.count,6,"sum"),"1min",sum,false))
     stt = stt.trim();
     stt = decodeURIComponent( stt );
     chartOptions = URL.extractChartOption( stt );
