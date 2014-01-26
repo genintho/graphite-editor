@@ -1,4 +1,4 @@
 graphite-editor
 ===============
 
-An easy to use editor for grahpite based chart
+An easy to use editor for graphite based chart
