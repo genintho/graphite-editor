@@ -12,4 +12,6 @@ SerieFunction.prototype.getArguments = function(){
     return this._arg;
 };
 
-
+SerieFunction.prototype.getArgumentAtIndex = function( index ){
+    return this._arg[index];
+};

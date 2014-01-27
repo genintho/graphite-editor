@@ -1,4 +1,5 @@
 function Chart( url ){
+    this._url = url;
     this._root = null;
     this._series = null;
     this._options = null;
@@ -26,7 +27,7 @@ Chart.prototype.setOptions = function( newOption ){
 };
 
 Chart.prototype.getRoot = function(){
-
+    return this._root;
 };
 
 Chart.prototype._getParam = function( input ){

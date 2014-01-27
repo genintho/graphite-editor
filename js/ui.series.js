@@ -1,13 +1,15 @@
 var UI = UI || {};
 
 UI.Series = (function(){
+    var _versionOptions = null;
+    var _seriesContainer = null;
 
     function _buildSerieContainer( serie ){
         var div = document.createElement( 'div' );
         div.className = 'serie_container';
 
         var h3 = document.createElement( 'h3' );
-        h3.appendChild( document.createTextNode( serie.name ) );
+        h3.appendChild( document.createTextNode( serie.getPrettyName() ) );
         div.appendChild( h3 );
 
         return div;
@@ -18,51 +20,60 @@ UI.Series = (function(){
         div.className = 'function';
 
         var h4 = document.createElement( 'h4' );
-        h4.appendChild( document.createTextNode( index + ' - ' + fct.name ) );
+        h4.appendChild( document.createTextNode( index + ' - ' + fct.getName() ) );
         div.appendChild( h4 );
 
         var form = document.createElement( 'form' );
         form.id = "";
-        form.className = "form-horizontal";
         form.setAttribute( 'role', 'form' );
 
 
-        var option = FunctionList[fct.name];
+        var option = _versionOptions[fct.getName()];
         if( typeof option.arg !== 'object' ){
             return div;
         }
+
+        var table = document.createElement( 'table' );
+        var head = table.createTHead();
+        var row = head.insertRow( -1 );
+        var th = document.createElement( 'th' );
+        th.appendChild( document.createTextNode( 'Name') );
+        row.appendChild( th );
+        th = document.createElement( 'th' );
+        th.appendChild( document.createTextNode( 'Value') );
+        row.appendChild( th );
+
         option.arg.forEach(function( arg, index ){
-            var group = null;
+            row = table.insertRow( -1 );
             switch( arg.type ){
                 case 'float':
                 case 'string':
-                    group = UIUtils.buildStringInput( fct.name, arg.name, '', 3, 9, arg, fct.arg[index] );
+                    UI.Utils.buildStringInput( row, arg.name, '', arg, fct.getArgumentAtIndex(index) );
                     break;
 
                 case 'color':
-                    group = UIUtils.buildColorInput( fct.name, arg.name, '', 3, 9, arg, fct.arg[index] );
+                    UI.Utils.buildColorInput( row, arg.name, '', arg, fct.getArgumentAtIndex(index) );
                     break;
 
                 case 'bool':
-                    group = UIUtils.buildCheckboxInput( fct.name, arg.name, '', 3, 9, arg, fct.arg[index] );
+                    UI.Utils.buildCheckboxInput( row, arg.name, '', arg, fct.getArgumentAtIndex(index) );
                     break;
 
                 case 'number':
-                    group = UIUtils.buildNumberInput( fct.name, arg.name, '', 3, 9, arg, fct.arg[index] );
+                    UI.Utils.buildNumberInput( row, arg.name, '', arg, fct.getArgumentAtIndex(index) );
                     break;
 
                 case 'select':
-                    group = UIUtils.buildSelectInput( fct.name, arg.name, '', 3, 9 ,arg, fct.arg[index] );
+                    UI.Utils.buildSelectInput( row, arg.name, '', arg, fct.getArgumentAtIndex(index) );
                     break;
 
                 default :
                     console.info( 'miss type ', option.type, option );
                     break;
-
             }
-            form.appendChild( group );
         });
 
+        form.appendChild( table );
         div.appendChild( form );
 
         return div;
@@ -110,17 +121,24 @@ UI.Series = (function(){
         },
 
         refresh: function( series ){
-            var eTarget = document.getElementById( "series_container" );
+            var tree = document.createDocumentFragment();
+
             series.forEach(function( serie ){
                 var container = _buildSerieContainer( serie );
 
-                serie.functions.forEach(function( fct, index ){
+                serie.getFunctions().forEach(function( fct, index ){
                     container.appendChild( _buildFunctionBlock( index+1, fct ) );
                 });
 
-                eTarget.appendChild( container );
+                tree.appendChild( container );
             });
 
+            _seriesContainer.appendChild( tree );
+        },
+
+        init: function( versionOptions ){
+            _versionOptions = versionOptions;
+            _seriesContainer = document.getElementById( "series_container" );
         }
     }
-});
+})();
