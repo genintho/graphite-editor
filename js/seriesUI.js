@@ -1,4 +1,6 @@
-define(["uiutils", "functionList"], function( UIUtils, FunctionList ){
+var UI = UI || {};
+
+UI.Series = (function(){
 
     function _buildSerieContainer( serie ){
         var div = document.createElement( 'div' );

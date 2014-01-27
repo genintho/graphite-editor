@@ -1,4 +1,8 @@
-define({
+var GraphiteConfig = GraphiteConfig || {};
+
+GraphiteConfig['0.9.12'] = GraphiteConfig['0.9.12'] || {};
+
+GraphiteConfig['0.9.12'].SerieFunctions = {
     groupByNode: {
         arg:[{
             name: "nodeNum",
@@ -32,4 +36,4 @@ define({
 
     },
     thomas:{}
-});
+};

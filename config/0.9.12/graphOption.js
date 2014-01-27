@@ -1,4 +1,8 @@
-define({
+var GraphiteConfig = GraphiteConfig || {};
+
+GraphiteConfig['0.9.12'] = GraphiteConfig['0.9.12'] || {};
+
+GraphiteConfig['0.9.12'].Options = {
     areaMode:{
         type: "select",
         value: ["none", "first", "all", "stacked"],
@@ -91,6 +95,5 @@ define({
     },
     yMin: {
         type: 'float'
-    },
-
-});
+    }
+};

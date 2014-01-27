@@ -28,13 +28,27 @@
         </section>
         <section>
             <h2>Chart options</h2>
-            <button type="button" id="addOption">Add Option</button>
+            <select id="addOption">Add Option</select>
             <form role="form" id="chart_container" class="form-horizontal" ></form>
         </section>
         <section>
             <h2>Series</h2>
             <div id="series_container"></div>
         </section>
-        <script data-main="js/main" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+
+        <script type="text/javascript" src="config/0.9.12/functionList.js"></script>
+        <script type="text/javascript" src="config/0.9.12/graphOption.js"></script>
+        <script type="text/javascript" src="js/graphOptionUI.js"></script>
+        <script type="text/javascript" src="js/imageUI.js"></script>
+        <script type="text/javascript" src="js/seriesUI.js"></script>
+        <script type="text/javascript" src="js/uiutils.js"></script>
+        <script type="text/javascript" src="js/chart.js"></script>
+        <script type="text/javascript" src="js/serie.js"></script>
+        <script type="text/javascript" src="js/serieFunction.js"></script>
+        <script type="text/javascript" src="js/urlBuilder.js"></script>
+        <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript">
+        App.init();
+    </script>
     </body>
 </html>

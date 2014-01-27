@@ -1,36 +1,53 @@
-define( [ 'graphOption', 'uiutils' ], function( GraphOptionList, UIUtils ){
+var UI = UI || {};
 
+UI.ChartOptions = (function(){
+
+    var _versionOptions = null;
     var _chartOptionContainer = null;
     var _config = null;
 
+    var _addOptionSelect = null;
 
-    function _run( config ){
-        var content = document.createDocumentFragment();
+
+    function _updateUI( config ){
+        var table = document.createElement( 'table' );
+        var head = table.createTHead();
+        var row = head.insertRow( -1 );
+        var th = document.createElement( 'th' );
+        th.appendChild( document.createTextNode( 'Name') );
+        row.appendChild( th );
+        th = document.createElement( 'th' );
+        th.appendChild( document.createTextNode( 'Value') );
+        row.appendChild( th );
+        th = document.createElement( 'th' );
+        th.appendChild( document.createTextNode( 'Delete') );
+        row.appendChild( th );
+
         for( var key in config ){
-            var group = null;
-            var option = GraphOptionList[key];
+            row = table.insertRow( -1 );
+            var option = _versionOptions[key];
 
             switch( option.type ){
 
                 case 'float':
                 case 'string':
-                    group = UIUtils.buildStringInput( key, key, '', 3, 8, option, config[key] );
+                    UI.Utils.buildStringInput( row, key, option, config[key] );
                     break;
 
                 case 'color':
-                    group = UIUtils.buildColorInput( key, key, '', 3, 8, option, config[key] );
+                    UI.Utils.buildColorInput( row, key, '', option, config[key] );
                     break;
 
                 case 'bool':
-                    group = UIUtils.buildCheckboxInput( key, key, '', 3, 8, option, config[key] );
+                    UI.Utils.buildCheckboxInput( row, key, '', option, config[key] );
                     break;
 
                 case 'number':
-                    group = UIUtils.buildNumberInput( key, key, '', 3, 8, option, config[key] );
+                    UI.Utils.buildNumberInput( row, key, '', option, config[key] );
                     break;
 
                 case 'select':
-                    group = UIUtils.buildSelectInput( key, key, '', 3, 8 ,option, config[key] );
+                    UI.Utils.buildSelectInput( row, key, '', option, config[key] );
                     break;
 
                 default :
@@ -38,47 +55,54 @@ define( [ 'graphOption', 'uiutils' ], function( GraphOptionList, UIUtils ){
                     break;
 
             }
+            var cell = row.insertCell(-1);
             var del = document.createElement( "button" );
             del.type = "button";
-            del.className = "btn btn-danger col-md-1 remove";
             del.setAttribute( 'data-key', key );
             del.appendChild( document.createTextNode( 'Remove' ) );
-            group.appendChild( del );
-
-            content.appendChild( group );
+            cell.appendChild( del );
         }
 
         _chartOptionContainer.innerHTML = '';
-        _chartOptionContainer.appendChild( content.cloneNode( true ) );
+        _chartOptionContainer.appendChild( table.cloneNode( true ) );
     }
 
 
     function _extraOption( config ){
-        var self = this;
-        var $container = $( '#addOption_container' ).empty();
+        _addOptionSelect.innerHTML = null;
 
-        for( var key in GraphOptionList ){
+        var selectTree = document.createDocumentFragment();
+
+        var option = document.createElement( 'option' );
+        option.selected = true;
+        option.disabled = true;
+        option.appendChild( document.createTextNode( 'Add options' ) );
+        selectTree.appendChild( option );
+
+        for( var key in _versionOptions ){
             if( config[key] !== undefined ){
                 continue;
             }
-            $container.append( '<li role="presentation"><a role="menuitem" tabindex="-1" href="#" class="add">' + key + '</a></li>' );
+            option = document.createElement( 'option' );
+            option.appendChild( document.createTextNode( key ) );
+            selectTree.appendChild( option );
         }
 
+        _addOptionSelect.appendChild( selectTree );
     }
 
-    function _refresh( config ){
-        _config = config;
-        _run( config );
-        _extraOption( config );
+    function _refresh( options ){
+        _config = options;
+        _updateUI( options );
+        _extraOption( options );
     }
 
     return {
         refresh: _refresh,
         getValue: function(){
             var res  = {};
-            var form = document.getElementById( "chart_container" );
-            for( var i = 0, len = form.elements.length; i< len; i+=2 ){
-                var element = form.elements[i];
+            for( var i = 0, len = _chartOptionContainer.elements.length; i< len; i+=2 ){
+                var element = _chartOptionContainer.elements[i];
                 var value = element.value;
 
                 if( element.type == 'checkbox' ){
@@ -88,7 +112,7 @@ define( [ 'graphOption', 'uiutils' ], function( GraphOptionList, UIUtils ){
                     value = element.value.substr( 1 );
                 }
 
-                if( GraphOptionList[element.name].def && GraphOptionList[element.name].def == value ){
+                if( _versionOptions[element.name].def && _versionOptions[element.name].def == value ){
                     continue;
                 }
 
@@ -96,20 +120,21 @@ define( [ 'graphOption', 'uiutils' ], function( GraphOptionList, UIUtils ){
             }
             return res;
         },
-        init: function(){
+        init: function( versionOptions ){
+            _versionOptions = versionOptions;
             _chartOptionContainer = document.getElementById( "chart_container" );
 
-            $( _chartOptionContainer )
-                .on( 'click', '.remove', function( event ){
-                    var key = $(this).data('key');
-                    delete _config[key];
-                    _refresh( _config );
-                });
-            $( "#addOption_container" ).on( 'click', '.add', function( event ){
-                event.preventDefault();
-                _config[ event.target.text ] = GraphOptionList[event.target.text].def ? GraphOptionList[event.target.text].def : '';
+//            $( _chartOptionContainer )
+//                .on( 'click', '.remove', function( event ){
+//                    var key = $(this).data('key');
+//                    delete _config[key];
+//                    _refresh( _config );
+//                });
+            _addOptionSelect = document.getElementById( 'addOption' );
+            _addOptionSelect.addEventListener( 'change', function( event ){
+                _config[ event.target.value ] = _versionOptions[event.target.value].def ? _versionOptions[event.target.value].def : '';
                 _refresh( _config );
             });
         }
     };
-});
+})();
