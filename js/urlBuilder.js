@@ -1,5 +1,5 @@
 function ChartURLBuilder( optionConfig, functionConfig ){
-    this._options = optionConfig;
+    this._optionConfig = optionConfig;
     this._function = functionConfig;
 }
 
@@ -7,7 +7,7 @@ ChartURLBuilder.prototype.run = function( root, options, series ){
     var url = root;
 
     for( var key in options ){
-        if( options[key] == this._options[key].def ){
+        if( options[key] == this._optionConfig[key].def ){
             continue;
         }
 

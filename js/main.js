@@ -1,11 +1,13 @@
 var App = (function(){
     var _App = this;
     var version = '0.9.12';
+    var _currentChart = null;
 
     document.getElementById( "refresh" ).addEventListener( "click", function( event ){
-//        chartOptions = GraphOptionUI.getValue();
-//        series = SeriesUI.getValue();
-//        ImageUI.updatePreview( chartOptions, series );
+        var chart = ChartFactory.buildfromFormValue( UI.ChartOptions.getValue(), UI.Series.getValue() );
+        chart.setRoot( _currentChart.getRoot() );
+        _currentChart = chart;
+        UI.Header.refresh( chart );
     });
 
 
@@ -17,7 +19,8 @@ var App = (function(){
 
     document.onpaste = function( event ){
         var item = event.clipboardData.items[0];
-        if( event.srcElement.id !== 'url' || item.kind !== 'string' ){
+        // event.srcElement.id !== 'url' ||
+        if(  item.kind !== 'string' ){
             return;
         }
 
@@ -47,14 +50,14 @@ var App = (function(){
     return {
         init: function(){
             var url = "https://stats.expensify.com/render/?width=586&height=308&from=-1hours&areaMode=stacked&lineMode=staircase&target=sortByMaxima(summarize(groupByNode(stats.counters.*.auth.transaction.commit.*.count%2C6%2C%22sum%22)%2C%221min%22))";
-            var chart = new Chart( url );
+            _currentChart = ChartFactory.buildFromURL( url );
             UI.ChartOptions.init( GraphiteConfig[version].Options );
             UI.Series.init( GraphiteConfig[version].SerieFunctions );
             UI.Header.init( GraphiteConfig[version].Options, GraphiteConfig[version].SerieFunctions );
 
-            _refresh( chart );
+            _refresh( _currentChart );
 
-window.c = chart;
+window.c = _currentChart;
         }
     }
 })();
