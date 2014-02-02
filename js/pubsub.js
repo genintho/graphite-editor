@@ -1,4 +1,4 @@
-define(function(){
+var PubSub = (function(){
     /**
      * Store the different event listener
      */
@@ -100,4 +100,4 @@ define(function(){
             }
         }
     };
-});
+})();

@@ -143,8 +143,9 @@ UI.ChartOptions = (function(){
             });
 
             _addOptionSelect.addEventListener( 'change', function( event ){
-                _config[ event.target.value ] = _versionOptions[event.target.value].def ? _versionOptions[event.target.value].def : '';
-                _refresh( _config );
+                PubSub.publish( EVENT.OPTION.ADD, {
+                    key: event.target.value
+                });
             });
         }
     };

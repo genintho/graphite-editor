@@ -16,6 +16,10 @@ Chart.prototype.getOptions = function(){
     return this._options;
 };
 
+Chart.prototype.addOption = function( name, value ){
+    this._options[name] = value;
+};
+
 Chart.prototype.setOptions = function( newOption ){
     this._options = newOption;
 };

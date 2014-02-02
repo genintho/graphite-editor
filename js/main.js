@@ -1,14 +1,14 @@
 var App = (function(){
     var _App = this;
     var version = '0.9.12';
+    var _chart = null;
 
     document.getElementById( "refresh" ).addEventListener( "click", function( event ){
         var chart = ChartFactory.buildfromFormValue( UI.ChartOptions.getValue(), UI.Series.getValue() );
-        chart.setRoot( _currentChart.getRoot() );
-        _currentChart = chart;
+        chart.setRoot( _chart.getRoot() );
+        _chart = chart;
         UI.Header.refresh( chart );
     });
-
 
     document.getElementById( "version" ).addEventListener( "change", function( event ){
         version = event.target.valueOf();
@@ -23,7 +23,7 @@ var App = (function(){
         }
 
         var serie = new Serie( value );
-        var series = _currentChart.getSeries();
+        var series = _chart.getSeries();
         series.push( serie );
 
         UI.Series.refresh( series );
@@ -47,34 +47,32 @@ var App = (function(){
         });
     };
 
-//    GraphOptionUI.init();
-
-    //sortByMaxima(summarize(groupByNode(stats.counters.*.auth.transaction.commit.*.count,6,"sum"),"1min"))&target=thomas(stats.counters.sc-www1.web.api.command.ApproveReport.count)
-    //&target=thomas(stats.counters.sc-www1.web.api.command.ApproveReport.count)";
-
-//        GraphOptionUI.refresh( chartOptions );
-//        SeriesUI.refresh( series );
-//        ImageUI.updatePreview( chartOptions, series );
-
     function _refresh( chart ){
         UI.Header.refresh( chart );
         UI.ChartOptions.refresh( chart.getOptions() );
         UI.Series.refresh( chart.getSeries() );
     }
 
+    PubSub.subscribe( EVENT.OPTION.ADD, function( evParam ){
+        var value = GraphiteConfig[version].Options[evParam.key].def ? GraphiteConfig[version].Options[evParam.key].def : '';
+        _chart.addOption( evParam.key, value );
+        _refresh( _chart );
+    });
+
+
 
     return {
         init: function(){
 //            var url = "https://stats.expensify.com/render/?width=586&height=308&from=-1hours&areaMode=stacked&lineMode=staircase&target=sortByMaxima(summarize(groupByNode(stats.counters.*.auth.transaction.commit.*.count%2C6%2C%22sum%22)%2C%221min%22))";
             var url = "https://stats.expensify.com/render/?width=586&height=308&_salt=1391291999.705&yMin=0&from=-1hours&title=Avg%20Perf%20get%20XList%20last%20hour&target=alias(movingAverage(averageSeries(stats.timers.*.web.api.get.receiptList.mean_90)%2C50)%2C%22receiptList%22)&target=alias(movingAverage(averageSeries(stats.timers.*.web.api.get.reportList.mean_90)%2C50)%2C%22reportList%22)&target=alias(movingAverage(averageSeries(stats.timers.*.web.api.get.transactionList.mean_90)%2C50)%2C%22transactionList%22)";
-            var chart = ChartFactory.buildFromURL( url );
+            _chart = ChartFactory.buildFromURL( url );
             UI.ChartOptions.init( GraphiteConfig[version].Options );
             UI.Series.init( GraphiteConfig[version].SerieFunctions );
             UI.Header.init( GraphiteConfig[version].Options, GraphiteConfig[version].SerieFunctions );
 
-            _refresh( chart );
+            _refresh( _chart );
 
-window.c = chart;
+window.c = _chart;
         }
     }
 })();
