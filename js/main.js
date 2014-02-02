@@ -16,11 +16,26 @@ var App = (function(){
         _App.init();
     });
 
+    document.getElementById( "btn_add_serie" ).addEventListener( "click", function( event ){
+        var value = document.getElementById( "add_serie" ).value;
+        value.trim();
+        if( value.length === 0 ){
+            return;
+        }
+
+        var serie = new Serie( value );
+        var series = _currentChart.getSeries();
+        series.push( serie );
+
+        UI.Series.refresh( series );
+        document.getElementById( "add_serie" ).value = "";
+
+    });
 
     document.onpaste = function( event ){
         var item = event.clipboardData.items[0];
-        // event.srcElement.id !== 'url' ||
-        if(  item.kind !== 'string' ){
+        //
+        if(event.srcElement.id !== 'url' ||  item.kind !== 'string' ){
             return;
         }
 
