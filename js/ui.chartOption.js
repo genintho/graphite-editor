@@ -24,8 +24,15 @@ UI.ChartOptions = (function(){
         row.appendChild( th );
 
         for( var key in config ){
-            row = table.insertRow( -1 );
             var option = _versionOptions[key];
+
+            // Skip unknown parameter
+            if( option === undefined ){
+                continue;
+            }
+
+            row = table.insertRow( -1 );
+
 
             switch( option.type ){
 
@@ -58,7 +65,7 @@ UI.ChartOptions = (function(){
             var cell = row.insertCell(-1);
             var del = document.createElement( "button" );
             del.type = "button";
-            del.className = 'js_remove';
+            del.classList.add( 'js_remove' );
             del.setAttribute( 'data-key', key );
             del.appendChild( document.createTextNode( 'Remove' ) );
             cell.appendChild( del );
@@ -127,7 +134,7 @@ UI.ChartOptions = (function(){
             _addOptionSelect = document.getElementById( 'addOption' );
 
             _chartOptionContainer.addEventListener( 'click', function( event ){
-                if( event.target.className.indexOf( 'js_remove' ) === -1 ){
+                if( !event.target.classList.contains( 'js_remove' ) ){
                     return;
                 }
                 delete _config[ event.target.dataset['key'] ];

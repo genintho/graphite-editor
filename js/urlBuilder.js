@@ -5,8 +5,12 @@ function ChartURLBuilder( optionConfig, functionConfig ){
 
 ChartURLBuilder.prototype.run = function( root, options, series ){
     var url = root;
-
     for( var key in options ){
+        // Skip unknown parameters
+        if( this._optionConfig[key] === undefined ){
+            continue;
+        }
+
         if( options[key] == this._optionConfig[key].def ){
             continue;
         }

@@ -6,7 +6,7 @@ UI.Series = (function(){
 
     function _buildSerieContainer( serie ){
         var div = document.createElement( 'div' );
-        div.className = 'serie_container';
+        div.classList.add( 'serie_container' );
 
         var h3 = document.createElement( 'h3' );
         h3.appendChild( document.createTextNode( serie.getPrettyName() ) );
@@ -16,8 +16,11 @@ UI.Series = (function(){
     }
 
     function _buildFunctionBlock( index, fct ){
+        var option = _versionOptions[fct.getName()];
+
         var div = document.createElement( 'div' );
-        div.className = 'function';
+        div.classList.add( 'function' );
+        div.setAttribute( 'draggable', true );
 
         var h4 = document.createElement( 'h4' );
         h4.appendChild( document.createTextNode( index + ' - ' + fct.getName() ) );
@@ -27,8 +30,11 @@ UI.Series = (function(){
         form.id = "";
         form.setAttribute( 'role', 'form' );
 
+        if( option === undefined ){
+            div.appendChild( document.createTextNode( 'Unknown function in this version' ) );
+            return div;
+        }
 
-        var option = _versionOptions[fct.getName()];
         if( typeof option.arg !== 'object' ){
             return div;
         }
@@ -78,6 +84,78 @@ UI.Series = (function(){
 
         return div;
     }
+
+
+    function _bindEvents(){
+        var binding = {
+            dragstart: handleDragStart,
+            dragenter: handleDragEnter,
+            dragover: handleDragOver,
+            dragleave: handleDragLeave,
+            drop: handleDrop,
+            dragend: handleDragEnd
+
+        };
+        var blocks = document.querySelectorAll('#series_container .function');
+        [].forEach.call( blocks, function( block ) {
+            for( var event in binding ){
+                block.removeEventListener( event, binding[event] )
+                block.addEventListener( event, binding[event] );
+            }
+        });
+    }
+
+    var dragedElement = null;
+    function handleDragStart(e) {
+        dragedElement = this;
+        dragedElement.style.opacity = '0.4';  // this / e.target is the source node.
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', this.innerHTML);
+    }
+
+    function handleDragOver(e) {
+        if (e.preventDefault) {
+            e.preventDefault(); // Necessary. Allows us to drop.
+        }
+
+        e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
+
+        return false;
+    }
+
+    function handleDragEnter(e) {
+        // this / e.target is the current hover target.
+        this.classList.add('over');
+    }
+
+    function handleDragLeave(e) {
+        this.classList.remove('over');  // this / e.target is previous target element.
+    }
+
+    function handleDrop(e) {
+        // this / e.target is current target element.
+        if( e.stopPropagation ){
+            e.stopPropagation(); // stops the browser from redirecting.
+        }
+        dragedElement.style.opacity = '1';
+        // Don't do anything if dropping the same column we're dragging.
+        if( dragedElement != this && dragedElement.parentNode == this.parentNode ){
+            // Set the source column's HTML to the HTML of the column we dropped on.
+            dragedElement.innerHTML = this.innerHTML;
+            this.innerHTML = e.dataTransfer.getData('text/html');
+        }
+
+        return false;
+    }
+
+    function handleDragEnd(e) {
+        // this/e.target is the source node.
+        var blocks = document.querySelectorAll('#series_container .function');
+        [].forEach.call(blocks, function (block) {
+            block.classList.remove('over');
+        });
+    }
+
 
     return {
         getValue: function(){
@@ -134,6 +212,7 @@ UI.Series = (function(){
             });
 
             _seriesContainer.appendChild( tree );
+            _bindEvents();
         },
 
         init: function( versionOptions ){
