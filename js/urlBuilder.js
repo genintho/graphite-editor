@@ -23,7 +23,7 @@ ChartURLBuilder.prototype.run = function( root, options, series ){
         url += '&target=';
         var fctStr = serie.getDataScheme();
         if( serie.getFunctions().length === 0 ){
-            url += serie.name;
+            url += fctStr;
             return;
         }
 

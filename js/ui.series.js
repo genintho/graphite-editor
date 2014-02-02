@@ -15,9 +15,10 @@ UI.Series = (function(){
 
         var button = document.createElement( "button" );
         button.type = "button";
-        button.appendChild( document.createTextNode( 'Delete' ) );
+        button.appendChild( document.createTextNode( 'Delete Serie' ) );
         button.classList.add( "remove" );
         div.appendChild( button );
+        div.appendChild( _buildFunctionSelector( serie ) );
 
         return div;
     }
@@ -92,6 +93,29 @@ UI.Series = (function(){
         return div;
     }
 
+    function _buildFunctionSelector( serie ){
+        var select = document.createElement( "select" );
+        select.classList.add( "add_function" );
+
+        var option = document.createElement( 'option' );
+        option.selected = true;
+        option.disabled = true;
+        option.text = "Apply function ...";
+
+        select.add( option );
+        var usedFunction = serie.getFunctionList();
+        for( var key in _versionOptions ){
+            if( usedFunction.indexOf( key ) !== -1 ){
+                continue;
+            }
+            option = document.createElement( "option" );
+            option.text = key;
+            option.value = key;
+            select.appendChild( option );
+        }
+
+        return select;
+    }
 
     function _bindEvents(){
         var binding = {
@@ -107,7 +131,6 @@ UI.Series = (function(){
         }
         UI.Utils.bind( _seriesContainer, "click", "remove", deleteSerie );
     }
-
 
     function deleteSerie( event ){
         this.parentElement.remove();
@@ -226,5 +249,5 @@ UI.Series = (function(){
             _seriesContainer = document.getElementById( "series_container" );
             _bindEvents();
         }
-    }
+    };
 })();

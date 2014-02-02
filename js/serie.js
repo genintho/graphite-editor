@@ -19,3 +19,9 @@ Serie.prototype.getPrettyName = function(){
 Serie.prototype.getFunctions = function(){
     return this._functions;
 };
+
+Serie.prototype.getFunctionList = function(){
+    return this.getFunctions().map( function( serieFunction ){
+        return serieFunction.getName();
+    });
+};

@@ -84,7 +84,7 @@ UI.ChartOptions = (function(){
         var option = document.createElement( 'option' );
         option.selected = true;
         option.disabled = true;
-        option.appendChild( document.createTextNode( 'Add options' ) );
+        option.text = "Add options" ;
         selectTree.appendChild( option );
 
         for( var key in _versionOptions ){
@@ -92,7 +92,8 @@ UI.ChartOptions = (function(){
                 continue;
             }
             option = document.createElement( 'option' );
-            option.appendChild( document.createTextNode( key ) );
+            option.text = key;
+            option.value = key;
             selectTree.appendChild( option );
         }
 
