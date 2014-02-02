@@ -3,6 +3,7 @@ var UI = UI || {};
 UI.Series = (function(){
     var _versionOptions = null;
     var _seriesContainer = null;
+    var _draggedElement = null;
 
     function _buildSerieContainer( serie ){
         var div = document.createElement( "div" );
@@ -100,18 +101,21 @@ UI.Series = (function(){
             dragleave: handleDragLeave,
             drop: handleDrop,
             dragend: handleDragEnd
-
         };
-        var container = document.getElementById( "series_container" );
         for( var event in binding ){
-            UI.Utils.bind( container, event, "function", binding[event] );
+            UI.Utils.bind( _seriesContainer, event, "function", binding[event] );
         }
+        UI.Utils.bind( _seriesContainer, "click", "remove", deleteSerie );
     }
 
-    var dragedElement = null;
+
+    function deleteSerie( event ){
+        this.parentElement.remove();
+    }
+
     function handleDragStart(e) {
-        dragedElement = this;
-        dragedElement.style.opacity = '0.4';  // this / e.target is the source node.
+        _draggedElement = this;
+        _draggedElement.style.opacity = '0.4';  // this / e.target is the source node.
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text/html', this.innerHTML);
     }
@@ -140,11 +144,11 @@ UI.Series = (function(){
         if( e.stopPropagation ){
             e.stopPropagation(); // stops the browser from redirecting.
         }
-        dragedElement.style.opacity = '1';
+        _draggedElement.style.opacity = '1';
         // Don't do anything if dropping the same column we're dragging.
-        if( dragedElement != this && dragedElement.parentNode == this.parentNode ){
+        if( _draggedElement != this && _draggedElement.parentNode == this.parentNode ){
             // Set the source column's HTML to the HTML of the column we dropped on.
-            dragedElement.innerHTML = this.innerHTML;
+            _draggedElement.innerHTML = this.innerHTML;
             this.innerHTML = e.dataTransfer.getData('text/html');
         }
 
@@ -215,12 +219,12 @@ UI.Series = (function(){
             });
             _seriesContainer.innerHTML = '';
             _seriesContainer.appendChild( tree );
-            _bindEvents();
         },
 
         init: function( versionOptions ){
             _versionOptions = versionOptions;
             _seriesContainer = document.getElementById( "series_container" );
+            _bindEvents();
         }
     }
 })();
