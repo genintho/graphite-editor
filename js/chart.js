@@ -20,6 +20,10 @@ Chart.prototype.addOption = function( name, value ){
     this._options[name] = value;
 };
 
+Chart.prototype.removeOption = function( name ){
+    delete this._options[name];
+};
+
 Chart.prototype.setOptions = function( newOption ){
     this._options = newOption;
 };

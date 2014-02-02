@@ -1,7 +1,7 @@
 var EVENT = {
     OPTION:{
         ADD: "addOptions",
-        REMOVE: "addOptions",
+        REMOVE: "removeOption",
         CHANGE: "optionschange"
     },
     SERIE:{

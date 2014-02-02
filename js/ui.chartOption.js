@@ -75,7 +75,6 @@ UI.ChartOptions = (function(){
         _chartOptionContainer.appendChild( table.cloneNode( true ) );
     }
 
-
     function _extraOption( config ){
         _addOptionSelect.innerHTML = null;
 
@@ -106,6 +105,21 @@ UI.ChartOptions = (function(){
         _extraOption( options );
     }
 
+    function _bindEvents(){
+        UI.Utils.bind( _chartOptionContainer, "click", "js_remove", function( event ){
+            PubSub.publish( EVENT.OPTION.REMOVE, {
+                key: event.target.dataset['key']
+            });
+        });
+
+        _addOptionSelect.addEventListener( "change", function( event ){
+            PubSub.publish( EVENT.OPTION.ADD, {
+                key: event.target.value
+            });
+        });
+    }
+
+
     return {
         refresh: _refresh,
         getValue: function(){
@@ -134,19 +148,7 @@ UI.ChartOptions = (function(){
             _chartOptionContainer = document.getElementById( "chart_container" );
             _addOptionSelect = document.getElementById( 'addOption' );
 
-            _chartOptionContainer.addEventListener( 'click', function( event ){
-                if( !event.target.classList.contains( 'js_remove' ) ){
-                    return;
-                }
-                delete _config[ event.target.dataset['key'] ];
-                _refresh( _config );
-            });
-
-            _addOptionSelect.addEventListener( 'change', function( event ){
-                PubSub.publish( EVENT.OPTION.ADD, {
-                    key: event.target.value
-                });
-            });
+           _bindEvents();
         }
     };
 })();

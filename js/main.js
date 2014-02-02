@@ -56,9 +56,13 @@ var App = (function(){
     PubSub.subscribe( EVENT.OPTION.ADD, function( evParam ){
         var value = GraphiteConfig[version].Options[evParam.key].def ? GraphiteConfig[version].Options[evParam.key].def : '';
         _chart.addOption( evParam.key, value );
-        _refresh( _chart );
+        UI.ChartOptions.refresh( _chart.getOptions() );
     });
 
+    PubSub.subscribe( EVENT.OPTION.REMOVE, function( evParam ){
+        _chart.removeOption( evParam.key );
+        UI.ChartOptions.refresh( _chart.getOptions() );
+    });
 
 
     return {
