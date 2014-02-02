@@ -24,10 +24,12 @@ var App = (function(){
             return;
         }
 
-        item.getAsString( function( stt ){
-//            stt = decodeURIComponent( stt );
-//            var chartOption = URL.extractChartOption( stt );
-//            GraphOptionUI.refresh( chartOption );
+        item.getAsString( function( url ){
+            _currentChart = ChartFactory.buildFromURL( url );
+            UI.ChartOptions.init( GraphiteConfig[version].Options );
+            UI.Series.init( GraphiteConfig[version].SerieFunctions );
+            UI.Header.init( GraphiteConfig[version].Options, GraphiteConfig[version].SerieFunctions );
+            _refresh( _currentChart );
         });
     };
 
