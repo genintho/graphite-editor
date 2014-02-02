@@ -96,5 +96,15 @@ UI.Utils = {
 
         var cell = row.insertCell( -1 );
         cell.appendChild( select );
+    },
+
+    bind: function( firstElement, eventType, className, callback ){
+        firstElement.addEventListener( eventType, function( event ){
+            if( !event.target.classList.contains( className ) ){
+                return;
+            }
+            callback.call( event.target, event );
+        });
+
     }
 };

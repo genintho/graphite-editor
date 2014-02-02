@@ -5,12 +5,18 @@ UI.Series = (function(){
     var _seriesContainer = null;
 
     function _buildSerieContainer( serie ){
-        var div = document.createElement( 'div' );
-        div.classList.add( 'serie_container' );
+        var div = document.createElement( "div" );
+        div.classList.add( "serie_container" );
 
-        var h3 = document.createElement( 'h3' );
+        var h3 = document.createElement( "h3" );
         h3.appendChild( document.createTextNode( serie.getPrettyName() ) );
         div.appendChild( h3 );
+
+        var button = document.createElement( "button" );
+        button.type = "button";
+        button.appendChild( document.createTextNode( 'Delete' ) );
+        button.classList.add( "remove" );
+        div.appendChild( button );
 
         return div;
     }
@@ -96,13 +102,10 @@ UI.Series = (function(){
             dragend: handleDragEnd
 
         };
-        var blocks = document.querySelectorAll('#series_container .function');
-        [].forEach.call( blocks, function( block ) {
-            for( var event in binding ){
-                block.removeEventListener( event, binding[event] )
-                block.addEventListener( event, binding[event] );
-            }
-        });
+        var container = document.getElementById( "series_container" );
+        for( var event in binding ){
+            UI.Utils.bind( container, event, "function", binding[event] );
+        }
     }
 
     var dragedElement = null;
@@ -210,7 +213,7 @@ UI.Series = (function(){
 
                 tree.appendChild( container );
             });
-
+            _seriesContainer.innerHTML = '';
             _seriesContainer.appendChild( tree );
             _bindEvents();
         },
