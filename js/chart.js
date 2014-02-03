@@ -1,15 +1,27 @@
 function Chart(){
     this._root = null;
-    this._series = [];
+    this._series = {};
     this._options = {};
 }
 
+Chart.prototype.getSerie = function( serieID ){
+    return this._series[serieID];
+};
+
 Chart.prototype.getSeries = function(){
-    return this._series;
+    var r = [];
+    for( var id in this._series ){
+        r.push( this._series[id] );
+    }
+    return r;
 };
 
 Chart.prototype.setSeries = function( newSeries ){
-    this._series = newSeries;
+    this._series = {};
+
+    newSeries.forEach( function( serie ){
+        this._series[serie.getID()] = serie;
+    }.bind( this ) )
 };
 
 Chart.prototype.getOptions = function(){
@@ -37,17 +49,9 @@ Chart.prototype.setRoot = function( url ){
 };
 
 Chart.prototype.addSerie = function( serie ){
-    this._series.push( serie );
+    this._series[serie.getID()] = serie;
 };
 
 Chart.prototype.removeSerie = function( serieID ){
-    var idIndex = -1;
-    this.getSeries().forEach( function( serie, index ){
-        if( serie.getID() == serieID ){
-            idIndex = index;
-        }
-    });
-    if( idIndex !== -1 ){
-        this._series.splice( idIndex, 1 );
-    }
+    delete this._series[serieID];
 };
