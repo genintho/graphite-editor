@@ -38,7 +38,7 @@ UI.ChartOptions = (function(){
 
                 case 'float':
                 case 'string':
-                    UI.Utils.buildStringInput( row, key, option, config[key] );
+                    UI.Utils.buildStringInput( row, key, '', option, config[key] );
                     break;
 
                 case 'color':
@@ -75,7 +75,6 @@ UI.ChartOptions = (function(){
         _chartOptionContainer.appendChild( table.cloneNode( true ) );
     }
 
-
     function _extraOption( config ){
         _addOptionSelect.innerHTML = null;
 
@@ -84,7 +83,7 @@ UI.ChartOptions = (function(){
         var option = document.createElement( 'option' );
         option.selected = true;
         option.disabled = true;
-        option.appendChild( document.createTextNode( 'Add options' ) );
+        option.text = "Add options" ;
         selectTree.appendChild( option );
 
         for( var key in _versionOptions ){
@@ -92,7 +91,8 @@ UI.ChartOptions = (function(){
                 continue;
             }
             option = document.createElement( 'option' );
-            option.appendChild( document.createTextNode( key ) );
+            option.text = key;
+            option.value = key;
             selectTree.appendChild( option );
         }
 
@@ -104,6 +104,21 @@ UI.ChartOptions = (function(){
         _updateUI( options );
         _extraOption( options );
     }
+
+    function _bindEvents(){
+        UI.Utils.bind( _chartOptionContainer, "click", "js_remove", function( event ){
+            PubSub.publish( EVENT.OPTION.REMOVE, {
+                key: event.target.dataset['key']
+            });
+        });
+
+        _addOptionSelect.addEventListener( "change", function( event ){
+            PubSub.publish( EVENT.OPTION.ADD, {
+                key: event.target.value
+            });
+        });
+    }
+
 
     return {
         refresh: _refresh,
@@ -133,18 +148,7 @@ UI.ChartOptions = (function(){
             _chartOptionContainer = document.getElementById( "chart_container" );
             _addOptionSelect = document.getElementById( 'addOption' );
 
-            _chartOptionContainer.addEventListener( 'click', function( event ){
-                if( !event.target.classList.contains( 'js_remove' ) ){
-                    return;
-                }
-                delete _config[ event.target.dataset['key'] ];
-                _refresh( _config );
-            });
-
-            _addOptionSelect.addEventListener( 'change', function( event ){
-                _config[ event.target.value ] = _versionOptions[event.target.value].def ? _versionOptions[event.target.value].def : '';
-                _refresh( _config );
-            });
+           _bindEvents();
         }
     };
 })();

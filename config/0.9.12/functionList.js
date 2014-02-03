@@ -72,7 +72,7 @@ GraphiteConfig['0.9.12'].SerieFunctions = {
     color:{
         arg:[{
             name: "theColor",
-            type: "string"
+            type: "color"
         }]
     },
     groupByNode: {
@@ -87,7 +87,7 @@ GraphiteConfig['0.9.12'].SerieFunctions = {
     movingAverage: {
         arg: [{
             name: "windowSize",
-            type: "string"
+            type: "number"
         }]
     },
     summarize:{

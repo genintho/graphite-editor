@@ -5,6 +5,7 @@ UI.Header = (function(){
     var chartURLBuilder = null;
     var urlInput = null;
     var imagePreview = null;
+    var root = null;
 
     return {
         refresh: function( chart ){
@@ -14,9 +15,14 @@ UI.Header = (function(){
             imagePreview.src = url;
 
             urlInput.value = url;
-        },
 
+            root.innerHTML = chart.getRoot();
+        },
+        getRoot: function(){
+            return root.value;
+        },
         init: function( chartOptions, SeriesFunction ){
+            root = document.getElementById( "root" );
             urlInput = document.getElementById( 'url' );
             imagePreview = document.getElementById( 'imagePreview' );
             imagePreview.onload = function(){

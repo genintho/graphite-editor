@@ -1,10 +1,10 @@
 var ChartFactory = {
-    buildFromURL: function( url ){
+    buildFromURL: function( url, versionFunction ){
         var url = this._sanitizeURL( url );
         var chart = new Chart();
         chart.setRoot( url.substr( 0, url.indexOf( '?' ) + 1 ) );
         chart.setOptions( this._extractOptionsFromURL( url ) );
-        chart.setSeries( this._extractSeriesFromURL( url ) );
+        chart.setSeries( this._extractSeriesFromURL( url, versionFunction ) );
         return chart;
     },
 
@@ -15,8 +15,10 @@ var ChartFactory = {
         return option;
     },
 
-    _extractSeriesFromURL: function( url ){
+    _extractSeriesFromURL: function( url, versionFunction ){
         var options = this._getParam( url );
+        var startReg = /^"/;
+        var endReg = /"$/;
         var _chart = this;
         var series = [];
         options.targets.forEach(function( target ){
@@ -24,8 +26,17 @@ var ChartFactory = {
             var serieName = token[0].arg[0];
             var serie = new Serie( serieName );
             token[0].arg = token[0].arg.slice( 1 );
-            token.forEach(function( thing ){
-                serie.addFunction( new SerieFunction( thing.name, thing.arg ) );
+            token.forEach(function( fct ){
+                var args = [];
+                fct.arg.forEach(function( urlArg, index ){
+                    var config = versionFunction[fct.name].arg;
+                    if( config[index].type === "string" || config[index].type === "color" ){
+                        urlArg = urlArg.replace( startReg, "" );
+                        urlArg = urlArg.replace( endReg, "" );
+                    }
+                    args.push( urlArg );
+                });
+                serie.addFunction( new SerieFunction( fct.name, args ) );
             });
             series.push( serie );
         });

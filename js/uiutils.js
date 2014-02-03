@@ -14,11 +14,12 @@ UI.Utils = {
 
 
         if( typeof value === 'string' && value.length ){
-            input.setAttribute( 'value', value );
+
         }
         else if( optionBlock.def ){
-            input.setAttribute( 'value', optionBlock.def );
+            value = optionBlock.def;
         }
+        input.value = value;
 
         return input;
     },
@@ -96,5 +97,15 @@ UI.Utils = {
 
         var cell = row.insertCell( -1 );
         cell.appendChild( select );
+    },
+
+    bind: function( firstElement, eventType, className, callback ){
+        firstElement.addEventListener( eventType, function( event ){
+            if( !event.target.classList.contains( className ) ){
+                return;
+            }
+            callback.call( event.target, event );
+        });
+
     }
 };

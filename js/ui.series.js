@@ -3,14 +3,34 @@ var UI = UI || {};
 UI.Series = (function(){
     var _versionOptions = null;
     var _seriesContainer = null;
+    var _draggedElement = null;
 
+    /**
+     *
+     * @param {Serie} serie
+     * @returns {HTMLElement}
+     * @private
+     */
     function _buildSerieContainer( serie ){
-        var div = document.createElement( 'div' );
-        div.classList.add( 'serie_container' );
+        var div = document.createElement( "div" );
+        div.classList.add( "serie_container" );
+        div.id = "serie_" + serie.getID();
 
-        var h3 = document.createElement( 'h3' );
+        return div;
+    }
+
+    function _buildHeader( div, serie ){
+        var h3 = document.createElement( "h3" );
         h3.appendChild( document.createTextNode( serie.getPrettyName() ) );
         div.appendChild( h3 );
+
+        var button = document.createElement( "button" );
+        button.type = "button";
+        button.appendChild( document.createTextNode( 'Delete Serie' ) );
+        button.classList.add( "remove" );
+        button.dataset.serieid = serie.getID();
+        div.appendChild( button );
+        div.appendChild( _buildFunctionSelector( serie ) );
 
         return div;
     }
@@ -42,12 +62,12 @@ UI.Series = (function(){
         var table = document.createElement( 'table' );
         var head = table.createTHead();
         var row = head.insertRow( -1 );
-        var th = document.createElement( 'th' );
-        th.appendChild( document.createTextNode( 'Name') );
-        row.appendChild( th );
-        th = document.createElement( 'th' );
-        th.appendChild( document.createTextNode( 'Value') );
-        row.appendChild( th );
+//        var th = document.createElement( 'th' );
+//        th.appendChild( document.createTextNode( 'Name') );
+//        row.appendChild( th );
+//        th = document.createElement( 'th' );
+//        th.appendChild( document.createTextNode( 'Value') );
+//        row.appendChild( th );
 
         option.arg.forEach(function( arg, index ){
             row = table.insertRow( -1 );
@@ -85,6 +105,38 @@ UI.Series = (function(){
         return div;
     }
 
+    function _buildFunctionSelector( serie ){
+        var select = document.createElement( "select" );
+        select.classList.add( "add_function" );
+
+        var option = document.createElement( 'option' );
+        option.selected = true;
+        option.disabled = true;
+        option.text = "Apply function ...";
+
+        select.add( option );
+        var usedFunction = serie.getFunctionList();
+        for( var key in _versionOptions ){
+            if( usedFunction.indexOf( key ) !== -1 ){
+                continue;
+            }
+            option = document.createElement( "option" );
+            option.text = key;
+            option.value = key;
+            select.appendChild( option );
+        }
+
+        return select;
+    }
+
+    function addFunction( event ){
+        var fctName = this.value;
+
+        PubSub.publish( EVENT.SERIE.ADD_FUNCTION, {
+            serieID: this.parentNode.id.substr( 6 ),
+            functionName: fctName
+        });
+    }
 
     function _bindEvents(){
         var binding = {
@@ -94,21 +146,23 @@ UI.Series = (function(){
             dragleave: handleDragLeave,
             drop: handleDrop,
             dragend: handleDragEnd
-
         };
-        var blocks = document.querySelectorAll('#series_container .function');
-        [].forEach.call( blocks, function( block ) {
-            for( var event in binding ){
-                block.removeEventListener( event, binding[event] )
-                block.addEventListener( event, binding[event] );
-            }
+        for( var event in binding ){
+            UI.Utils.bind( _seriesContainer, event, "function", binding[event] );
+        }
+        UI.Utils.bind( _seriesContainer, "click", "remove", deleteSerie );
+        UI.Utils.bind( _seriesContainer, "change", "add_function", addFunction );
+    }
+
+    function deleteSerie( event ){
+        PubSub.publish( EVENT.SERIE.REMOVE, {
+            serieID: this.dataset.serieid
         });
     }
 
-    var dragedElement = null;
     function handleDragStart(e) {
-        dragedElement = this;
-        dragedElement.style.opacity = '0.4';  // this / e.target is the source node.
+        _draggedElement = this;
+        _draggedElement.style.opacity = '0.4';  // this / e.target is the source node.
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text/html', this.innerHTML);
     }
@@ -137,11 +191,11 @@ UI.Series = (function(){
         if( e.stopPropagation ){
             e.stopPropagation(); // stops the browser from redirecting.
         }
-        dragedElement.style.opacity = '1';
+        _draggedElement.style.opacity = '1';
         // Don't do anything if dropping the same column we're dragging.
-        if( dragedElement != this && dragedElement.parentNode == this.parentNode ){
+        if( _draggedElement != this && _draggedElement.parentNode == this.parentNode ){
             // Set the source column's HTML to the HTML of the column we dropped on.
-            dragedElement.innerHTML = this.innerHTML;
+            _draggedElement.innerHTML = this.innerHTML;
             this.innerHTML = e.dataTransfer.getData('text/html');
         }
 
@@ -204,20 +258,32 @@ UI.Series = (function(){
             series.forEach(function( serie ){
                 var container = _buildSerieContainer( serie );
 
+                container = _buildHeader( container, serie );
+
                 serie.getFunctions().forEach(function( fct, index ){
                     container.appendChild( _buildFunctionBlock( index+1, fct ) );
                 });
 
                 tree.appendChild( container );
             });
-
+            _seriesContainer.innerHTML = '';
             _seriesContainer.appendChild( tree );
-            _bindEvents();
+        },
+
+        refreshOne: function( serie ){
+            var container = document.getElementById( "serie_" + serie.getID() );
+            container.innerHTML = '';
+            container = _buildHeader( container, serie );
+
+            serie.getFunctions().forEach(function( fct, index ){
+                container.appendChild( _buildFunctionBlock( index+1, fct ) );
+            });
         },
 
         init: function( versionOptions ){
             _versionOptions = versionOptions;
             _seriesContainer = document.getElementById( "series_container" );
+            _bindEvents();
         }
-    }
+    };
 })();
