@@ -36,7 +36,7 @@ var App = (function(){
         }
 
         item.getAsString( function( url ){
-            var chart = ChartFactory.buildFromURL( url );
+            var chart = ChartFactory.buildFromURL( url, GraphiteConfig[version].SerieFunctions );
             UI.ChartOptions.init( GraphiteConfig[version].Options );
             UI.Series.init( GraphiteConfig[version].SerieFunctions );
             UI.Header.init( GraphiteConfig[version].Options, GraphiteConfig[version].SerieFunctions );
