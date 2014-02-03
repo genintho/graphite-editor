@@ -22,13 +22,10 @@ var App = (function(){
             return;
         }
 
-        var serie = new Serie( value );
-        var series = _chart.getSeries();
-        series.push( serie );
-
-        UI.Series.refresh( series );
         document.getElementById( "add_serie" ).value = "";
-
+        PubSub.publish( EVENT.SERIE.ADD, {
+            serie: value
+        });
     });
 
     document.onpaste = function( event ){
@@ -64,6 +61,11 @@ var App = (function(){
         UI.ChartOptions.refresh( _chart.getOptions() );
     });
 
+    PubSub.subscribe( EVENT.SERIE.ADD, function( evParam ){
+        var serie = new Serie( evParam.serie );
+        _chart.addSerie( serie );
+        UI.Series.refresh( _chart.getSeries() );
+    });
 
     return {
         init: function(){

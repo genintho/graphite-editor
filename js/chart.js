@@ -1,7 +1,7 @@
 function Chart(){
     this._root = null;
-    this._series = null;
-    this._options = null;
+    this._series = [];
+    this._options = {};
 }
 
 Chart.prototype.getSeries = function(){
@@ -36,5 +36,7 @@ Chart.prototype.setRoot = function( url ){
     this._root = url;
 };
 
-
+Chart.prototype.addSerie = function( serie ){
+    this._series.push( serie );
+};
 

@@ -25,3 +25,6 @@ Serie.prototype.getFunctionList = function(){
         return serieFunction.getName();
     });
 };
+
+
+
