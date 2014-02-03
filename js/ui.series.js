@@ -14,7 +14,12 @@ UI.Series = (function(){
     function _buildSerieContainer( serie ){
         var div = document.createElement( "div" );
         div.classList.add( "serie_container" );
+        div.id = "serie_" + serie.getID();
 
+        return div;
+    }
+
+    function _buildHeader( div, serie ){
         var h3 = document.createElement( "h3" );
         h3.appendChild( document.createTextNode( serie.getPrettyName() ) );
         div.appendChild( h3 );
@@ -57,12 +62,12 @@ UI.Series = (function(){
         var table = document.createElement( 'table' );
         var head = table.createTHead();
         var row = head.insertRow( -1 );
-        var th = document.createElement( 'th' );
-        th.appendChild( document.createTextNode( 'Name') );
-        row.appendChild( th );
-        th = document.createElement( 'th' );
-        th.appendChild( document.createTextNode( 'Value') );
-        row.appendChild( th );
+//        var th = document.createElement( 'th' );
+//        th.appendChild( document.createTextNode( 'Name') );
+//        row.appendChild( th );
+//        th = document.createElement( 'th' );
+//        th.appendChild( document.createTextNode( 'Value') );
+//        row.appendChild( th );
 
         option.arg.forEach(function( arg, index ){
             row = table.insertRow( -1 );
@@ -124,6 +129,15 @@ UI.Series = (function(){
         return select;
     }
 
+    function addFunction( event ){
+        var fctName = this.value;
+
+        PubSub.publish( EVENT.SERIE.ADD_FUNCTION, {
+            serieID: this.parentNode.id.substr( 6 ),
+            functionName: fctName
+        });
+    }
+
     function _bindEvents(){
         var binding = {
             dragstart: handleDragStart,
@@ -137,6 +151,7 @@ UI.Series = (function(){
             UI.Utils.bind( _seriesContainer, event, "function", binding[event] );
         }
         UI.Utils.bind( _seriesContainer, "click", "remove", deleteSerie );
+        UI.Utils.bind( _seriesContainer, "change", "add_function", addFunction );
     }
 
     function deleteSerie( event ){
@@ -243,6 +258,8 @@ UI.Series = (function(){
             series.forEach(function( serie ){
                 var container = _buildSerieContainer( serie );
 
+                container = _buildHeader( container, serie );
+
                 serie.getFunctions().forEach(function( fct, index ){
                     container.appendChild( _buildFunctionBlock( index+1, fct ) );
                 });
@@ -251,6 +268,16 @@ UI.Series = (function(){
             });
             _seriesContainer.innerHTML = '';
             _seriesContainer.appendChild( tree );
+        },
+
+        refreshOne: function( serie ){
+            var container = document.getElementById( "serie_" + serie.getID() );
+            container.innerHTML = '';
+            container = _buildHeader( container, serie );
+
+            serie.getFunctions().forEach(function( fct, index ){
+                container.appendChild( _buildFunctionBlock( index+1, fct ) );
+            });
         },
 
         init: function( versionOptions ){

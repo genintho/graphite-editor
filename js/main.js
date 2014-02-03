@@ -72,6 +72,13 @@ var App = (function(){
         UI.Series.refresh( _chart.getSeries() );
     });
 
+    PubSub.subscribe( EVENT.SERIE.ADD_FUNCTION, function( evParam ){
+        var serie = _chart.getSerie( evParam.serieID );
+        var serieFct = new SerieFunction( evParam.functionName, [] );
+        serie.addFunction( serieFct );
+        UI.Series.refreshOne( serie );
+    });
+
     return {
         init: function(){
 //            var url = "https://stats.expensify.com/render/?width=586&height=308&from=-1hours&areaMode=stacked&lineMode=staircase&target=sortByMaxima(summarize(groupByNode(stats.counters.*.auth.transaction.commit.*.count%2C6%2C%22sum%22)%2C%221min%22))";
