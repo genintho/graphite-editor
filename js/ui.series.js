@@ -5,6 +5,12 @@ UI.Series = (function(){
     var _seriesContainer = null;
     var _draggedElement = null;
 
+    /**
+     *
+     * @param {Serie} serie
+     * @returns {HTMLElement}
+     * @private
+     */
     function _buildSerieContainer( serie ){
         var div = document.createElement( "div" );
         div.classList.add( "serie_container" );
@@ -17,6 +23,7 @@ UI.Series = (function(){
         button.type = "button";
         button.appendChild( document.createTextNode( 'Delete Serie' ) );
         button.classList.add( "remove" );
+        button.dataset.serieid = serie.getID();
         div.appendChild( button );
         div.appendChild( _buildFunctionSelector( serie ) );
 
@@ -133,7 +140,9 @@ UI.Series = (function(){
     }
 
     function deleteSerie( event ){
-        this.parentElement.remove();
+        PubSub.publish( EVENT.SERIE.REMOVE, {
+            serieID: this.dataset.serieid
+        });
     }
 
     function handleDragStart(e) {

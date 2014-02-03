@@ -40,3 +40,14 @@ Chart.prototype.addSerie = function( serie ){
     this._series.push( serie );
 };
 
+Chart.prototype.removeSerie = function( serieID ){
+    var idIndex = -1;
+    this.getSeries().forEach( function( serie, index ){
+        if( serie.getID() == serieID ){
+            idIndex = index;
+        }
+    });
+    if( idIndex !== -1 ){
+        this._series.splice( idIndex, 1 );
+    }
+};
