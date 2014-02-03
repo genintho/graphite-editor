@@ -14,11 +14,12 @@ UI.Utils = {
 
 
         if( typeof value === 'string' && value.length ){
-            input.setAttribute( 'value', value );
+
         }
         else if( optionBlock.def ){
-            input.setAttribute( 'value', optionBlock.def );
+            value = optionBlock.def;
         }
+        input.value = value;
 
         return input;
     },

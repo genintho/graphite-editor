@@ -38,7 +38,7 @@ UI.ChartOptions = (function(){
 
                 case 'float':
                 case 'string':
-                    UI.Utils.buildStringInput( row, key, option, config[key] );
+                    UI.Utils.buildStringInput( row, key, '', option, config[key] );
                     break;
 
                 case 'color':
