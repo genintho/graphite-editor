@@ -87,7 +87,7 @@ GraphiteConfig['0.9.12'].SerieFunctions = {
     movingAverage: {
         arg: [{
             name: "windowSize",
-            type: "string"
+            type: "number"
         }]
     },
     summarize:{
