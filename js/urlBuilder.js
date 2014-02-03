@@ -1,6 +1,6 @@
 function ChartURLBuilder( optionConfig, functionConfig ){
     this._optionConfig = optionConfig;
-    this._function = functionConfig;
+    this._functionConfig = functionConfig;
 }
 
 ChartURLBuilder.prototype.run = function( root, options, series ){
@@ -28,14 +28,21 @@ ChartURLBuilder.prototype.run = function( root, options, series ){
         }
 
         serie.getFunctions().forEach( function( fct ){
-            fctStr = fct.getName() + '(' + fctStr;
+            var fctName = fct.getName();
+            fctStr = fctName + '(' + fctStr;
             fct.getArguments().forEach( function( args, index ){
+                if( this._functionConfig[fctName].arg[index].type === "string" ||
+                    this._functionConfig[fctName].arg[index].type === "color"
+                    ){
+                    args = '"' + args + '"';
+                }
+
                 fctStr += ',' + args;
-            });
+            }.bind( this ) );
             fctStr += ')';
-        });
+        }.bind( this ) );
         url += fctStr;
-    });
+    }.bind( this ) );
     return url;
 };
 
