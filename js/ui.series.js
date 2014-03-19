@@ -35,7 +35,7 @@ UI.Series = (function(){
         return div;
     }
 
-    function _buildFunctionBlock( index, fct ){
+    function _buildFunctionBlock( index, serie, fct ){
         var option = _versionOptions[fct.getName()];
 
         var div = document.createElement( 'div' );
@@ -43,8 +43,18 @@ UI.Series = (function(){
         div.setAttribute( 'draggable', true );
 
         var h4 = document.createElement( 'h4' );
-        h4.appendChild( document.createTextNode( index + ' - ' + fct.getName() ) );
+        h4.appendChild( document.createTextNode( (index + 1) + ' - ' + fct.getName() ) );
         div.appendChild( h4 );
+
+        var del = document.createElement( "button" );
+        del.type = "button";
+        del.classList.add( 'js_remove_function' );
+        del.dataset.serieid = serie.getID();
+        del.dataset.key = index;
+        del.appendChild( document.createTextNode( 'Remove' ) );
+
+        div.appendChild( del );
+
 
         var form = document.createElement( 'form' );
         form.id = "";
@@ -152,6 +162,14 @@ UI.Series = (function(){
         }
         UI.Utils.bind( _seriesContainer, "click", "remove", deleteSerie );
         UI.Utils.bind( _seriesContainer, "change", "add_function", addFunction );
+        UI.Utils.bind( _seriesContainer, "click", "js_remove_function", deleteSerieFunction );
+    }
+
+    function deleteSerieFunction(){
+        PubSub.publish( EVENT.SERIE.REMOVE_FUNCTION, {
+            functionIndex: event.target.dataset.key,
+            serieID: this.dataset.serieid
+        });
     }
 
     function deleteSerie( event ){
@@ -261,7 +279,7 @@ UI.Series = (function(){
                 container = _buildHeader( container, serie );
 
                 serie.getFunctions().forEach(function( fct, index ){
-                    container.appendChild( _buildFunctionBlock( index+1, fct ) );
+                    container.appendChild( _buildFunctionBlock( index, serie, fct ) );
                 });
 
                 tree.appendChild( container );
@@ -276,7 +294,7 @@ UI.Series = (function(){
             container = _buildHeader( container, serie );
 
             serie.getFunctions().forEach(function( fct, index ){
-                container.appendChild( _buildFunctionBlock( index+1, fct ) );
+                container.appendChild( _buildFunctionBlock( index, serie, fct ) );
             });
         },
 

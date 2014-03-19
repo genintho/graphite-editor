@@ -17,6 +17,10 @@ Serie.prototype.addFunction = function( fct ){
     this._functions.push( fct );
 };
 
+Serie.prototype.removeFunctionByIndex = function( index ){
+    this._functions.splice( index, 1 );
+};
+
 Serie.prototype.getPrettyName = function(){
     return this.getDataScheme();
 };

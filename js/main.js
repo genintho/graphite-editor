@@ -8,6 +8,8 @@ var App = (function(){
         chart.setRoot( _chart.getRoot() );
         _chart = chart;
         UI.Header.refresh( chart );
+        UI.ChartOptions.refresh( chart.getOptions() );
+        UI.Series.refresh( chart.getSeries() );
     });
 
     document.getElementById( "version" ).addEventListener( "change", function( event ){
@@ -79,11 +81,20 @@ var App = (function(){
         UI.Series.refreshOne( serie );
     });
 
+    PubSub.subscribe( EVENT.SERIE.REMOVE_FUNCTION, function( evParam ){
+        console.log( evParam );
+        console.log( _chart );
+        var serie = _chart.getSerie( evParam.serieID );
+        serie.removeFunctionByIndex( evParam.functionIndex );
+        UI.Series.refreshOne( serie );
+    });
+
     return {
         init: function(){
 //            var url = "https://stats.expensify.com/render/?width=586&height=308&from=-1hours&areaMode=stacked&lineMode=staircase&target=sortByMaxima(summarize(groupByNode(stats.counters.*.auth.transaction.commit.*.count%2C6%2C%22sum%22)%2C%221min%22))";
-            var url = "https://stats.expensify.com/render/?width=586&height=308&_salt=1391291999.705&yMin=0&from=-1hours&title=Avg%20Perf%20get%20XList%20last%20hour&target=alias(movingAverage(averageSeries(stats.timers.*.web.api.get.receiptList.mean_90)%2C50)%2C%22receiptList%22)&target=alias(movingAverage(averageSeries(stats.timers.*.web.api.get.reportList.mean_90)%2C50)%2C%22reportList%22)&target=alias(movingAverage(averageSeries(stats.timers.*.web.api.get.transactionList.mean_90)%2C50)%2C%22transactionList%22)";
-            _chart = ChartFactory.buildFromURL( url );
+//            var url = "https://stats.expensify.com/render/?width=586&height=308&_salt=1391291999.705&yMin=0&from=-1hours&title=Avg%20Perf%20get%20XList%20last%20hour&target=alias(movingAverage(averageSeries(stats.timers.*.web.api.get.receiptList.mean_90)%2C50)%2C%22receiptList%22)&target=alias(movingAverage(averageSeries(stats.timers.*.web.api.get.reportList.mean_90)%2C50)%2C%22reportList%22)&target=alias(movingAverage(averageSeries(stats.timers.*.web.api.get.transactionList.mean_90)%2C50)%2C%22transactionList%22)";
+            var url = "https://stats.expensify.com/render/?width=586&height=308&_salt=1391291999.705&yMin=0&from=-1hours&title=Avg%20Perf%20get%20XList%20last%20hour&target=alias(movingAverage(averageSeries(stats.timers.*.web.api.get.receiptList.mean_90)%2C50)%2C%22receiptList%22)";
+            _chart = ChartFactory.buildFromURL( url, GraphiteConfig[version].SerieFunctions );
             UI.ChartOptions.init( GraphiteConfig[version].Options );
             UI.Series.init( GraphiteConfig[version].SerieFunctions );
             UI.Header.init( GraphiteConfig[version].Options, GraphiteConfig[version].SerieFunctions );
